@@ -84,4 +84,24 @@ async topWordsInLast600StoriesOfUsers() {
   }
 }
 
+async topWordsInStoryOfLastWeek(storyId: number) {
+  const foundStory = await this.getAStory(storyId);
+  const storyTime = new Date(foundStory.data?.time).toISOString();
+  const storyWeek = getWeekNumber(new Date(storyTime));
+  const currentWeek = getWeekNumber(new Date());
+  let response 
+  if (currentWeek[0] != storyWeek[0] || currentWeek[1] - storyWeek[1] != 1) {
+    response = {
+      message: 'Only  stories of the past weeks is needed',
+    };
+  }
+
+  if (foundStory.title != null) {
+    const wordObject = transformToObject(foundStory.data?.title);
+    const sortedObject = sortObject(wordObject);
+    response = sortedObject;
+  }
+  return response;
+}
+
 }
