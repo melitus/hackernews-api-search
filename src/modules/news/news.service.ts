@@ -33,4 +33,22 @@ export class NewsService {
     return foundLatestStories
 }
 
+async topTenWordsInLast25Stories() {
+  const foundLatestStoriesIds: any = await this.getLatestStories();
+  const lastStoryIds = foundLatestStoriesIds.data.slice(0, 25);
+  const foundStories: any = await mapConcurrently(lastStoryIds, async (storyId: number | any) => {
+    return await this.getAStory(storyId);
+  });
+  let title: string;
+  foundStories.map((story: any) => {
+    if (story.data.hasOwnProperty('title')) {
+      title = title + ' ' + story.data.title;
+    }
+  })
+  if (title != null) {
+    const wordObject = transformToObject(title);
+    const sortedObject = sortObject(wordObject);
+    return sortedObject
+  }
+}
 }
