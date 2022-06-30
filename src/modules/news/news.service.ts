@@ -51,4 +51,37 @@ async topTenWordsInLast25Stories() {
     return sortedObject
   }
 }
+
+async topWordsInLast600StoriesOfUsers() {
+  const foundLatestStoriesIds: any = await this.getLatestStories();
+  const lastStoryIds = foundLatestStoriesIds.data.slice(0, 600);
+
+  const foundStories = await mapConcurrently(lastStoryIds, async (storyId: any) => {
+    return await this.getAStory(storyId);
+  });
+  const userIds: any = foundStories.map((x) =>x.data?.by);
+  const users = await mapConcurrently(userIds, async (userId: any) => {
+    return await this.getAUser(userId);
+  });
+  const qualifiedUsers = users.filter((user) => user.data?.karma >= 10);
+  
+  const qualifiedUserIds: Array<string> = qualifiedUsers.map((x) => x.data?.id);
+
+  const filteredStories = foundStories.filter((story) =>
+    qualifiedUserIds.includes(story.data?.by),
+  );
+
+  let title: string;
+  filteredStories.map((story: any) => {
+    if (story.data?.title != null) {
+      title = title + ' ' + story.data.title;
+    }
+  })
+  if (title != null) {
+    const wordObject = transformToObject(title);
+    const sortedObject = sortObject(wordObject);
+    return sortedObject
+  }
+}
+
 }

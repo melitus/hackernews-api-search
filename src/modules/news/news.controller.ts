@@ -14,4 +14,10 @@ export class NewsController {
    const foundTopTenMostOccurringWords = await this.newsService.topTenWordsInLast25Stories()
       return res.status(HttpStatus.OK).json(foundTopTenMostOccurringWords);
     }
+    
+  @Get('getTopTenMostOccurringWordsInLast600StoriesOfUsers')
+  async getTopWordsInLast600StoriesOfUsers(@Res() res: Response) {
+    const foundTopTenMostOccurringWords = await this.newsService.topWordsInLast600StoriesOfUsers()
+      return res.status(HttpStatus.OK).json(foundTopTenMostOccurringWords);
+    }
   }
